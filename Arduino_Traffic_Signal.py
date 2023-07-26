@@ -1,6 +1,6 @@
 from pyfirmata import Arduino, util
 import time
-board= Arduino('/dev/ttyUSB1')
+board= Arduino('COM3')    #give the port to which the Arduino board is connected
 led_r = board.digital[10]
 led_y = board.digital[9]
 led_g = board.digital[6]
