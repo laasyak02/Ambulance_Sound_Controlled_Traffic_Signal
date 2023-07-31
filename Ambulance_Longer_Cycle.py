@@ -64,6 +64,12 @@ plt.figure()
 plt.imshow(skeleton,cmap=plt.cm.gray)
 plt.savefig('Skeleton_image.png')
 
+'''
+Function Name: next_locations_up
+Input parameters: Coordinates of the current minima and the part number.
+Purpose: This function finds the following maxima to this minima. 
+Output parameters: Returns the coordinates of the maxima point, if found, else returns (0,0)
+'''
 def next_locations_up(y_down,x_down,part_no):
 	y,x=0,0
 	x_low=x_down+20
@@ -86,6 +92,12 @@ def next_locations_up(y_down,x_down,part_no):
 		return (y,x)
 	return (0,0)
 
+'''
+Function Name: next_locations_down
+Input parameters: Coordinates of the current maxima, the part number,and the number of maximas and minimas found until now.
+Purpose: This function finds the following minima to this maxima.
+Output parameters: Returns the coordinates of the minima point, if found, else returns (0,0)
+'''
 def next_locations_down(y_up,x_up,part_no,count):
 	y,x=0,0
 	x_low=x_up+20
@@ -114,6 +126,12 @@ def next_locations_down(y_up,x_up,part_no,count):
 		return (y,x)
 	return (0,0)
 
+'''
+Function Name: next_locations
+Input parameters: Coordinates of the first minima found and the part number associated with it.
+Purpose: This function calculates the number of continuous maximas and minimas found, i.e. it calculates the number of periodic cycles found. This is done with the help of next_locations_up and next_locations_down functions.
+Output parameters: Returns True if the required number of periodic cycles are found and False otherwise.
+'''
 def next_locations(y_down1,x_down1,part_no):
 	count=1
 	(y,x)=next_locations_up(y_down1,x_down1,part_no)
@@ -135,6 +153,12 @@ def next_locations(y_down1,x_down1,part_no):
 		return True
 	return False
 
+'''
+Function Name: checking_white
+Input parameters: Coordinates of the first maxima found and the part number in which it is detected.
+Purpose: This function finds the following minima to this maxima. If it is found, the coordinates of this point is sent as the input to the next_locations function along with the part number.
+Output parameters: Returns True if the required number of periodic cycles are found and False otherwise.
+'''
 def checking_white(min_y,x_val,part_no):
 	for i in x_val:
 		#print("x:",i,"y:",min_y)
