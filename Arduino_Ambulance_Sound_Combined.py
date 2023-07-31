@@ -10,6 +10,13 @@ import cv2
 import keyboard
 from skimage.morphology import skeletonize
 
+'''
+Function Name: audio_to_skeletonize
+Input parameters: Audio file to be processed in .wav format
+Purpose: The audio file is processed to generate the Mel Spectrogram and the Log Mel Spectrogram. The Log Mel Spectrogram further undergoes Image Processing. It is first binarized, following which the portion where the ambulance sound may be present is cropped out.
+This cropped out portion then undergoes skeletonization. The skeletonized image then undergoes contour detection.The contours detected are drawn on to a new image. This image is further sent as an input to another function which checks the presence of periodicity.
+Output parameters: Returns True if the presence of Ambulance sound is confirmed and False otherwise.
+'''
 def audio_to_skeletonize(audio):
 	x, sr = librosa.load(audio)
 	mel_bins = 64 # Number of mel bands
@@ -100,6 +107,12 @@ def audio_to_skeletonize(audio):
 		return True
 	return False
 
+'''
+Function Name: next_locations_up
+Input parameters: Coordinates of the current minima and the part number.
+Purpose: This function finds the following maxima to this minima. 
+Output parameters: Returns the coordinates of the maxima point, if found, else returns (0,0)
+'''
 def next_locations_up(y_down,x_down,part_no):
 	if l_or_s=='l':
 		a=20
@@ -132,6 +145,12 @@ def next_locations_up(y_down,x_down,part_no):
 		return (y,x)
 	return (0,0)
 
+'''
+Function Name: next_locations_down
+Input parameters: Coordinates of the current maxima, the part number, the number of maximas and minimas found until now, and the number of maximas and minimas needed to be found totally.
+Purpose: This function finds the following minima to this maxima.
+Output parameters: Returns the coordinates of the minima point, if found, else returns (0,0)
+'''
 def next_locations_down(y_up,x_up,part_no,count,count_limit):
 	if l_or_s=='l':
 		a=20
@@ -171,6 +190,12 @@ def next_locations_down(y_up,x_up,part_no,count,count_limit):
 		return (y,x)
 	return (0,0)
 
+'''
+Function Name: next_locations
+Input parameters: Coordinates of the first minima found and the part number associated with it.
+Purpose: This function calculates the number of continuous maximas and minimas found, i.e. it calculates the number of periodic cycles found. This is done with the help of next_locations_up and next_locations_down functions.
+Output parameters: Returns True if the required number of periodic cycles are found and False otherwise.
+'''
 def next_locations(y_down1,x_down1,part_no):
 	if l_or_s=='l':
 		count=1
@@ -221,6 +246,12 @@ def next_locations(y_down1,x_down1,part_no):
 		else:
 			return False
 
+'''
+Function Name: checking_white
+Input parameters: Coordinates of the first maxima found and the part number in which it is detected.
+Purpose: This function finds the following minima to this maxima. If it is found, the coordinates of this point is sent as the input to the next_locations function along with the part number.
+Output parameters: Returns True if the required number of periodic cycles are found and False otherwise.
+'''
 def checking_white(min_y,x_val,part_no):
 	if l_or_s=='l':
 		a=20
@@ -266,7 +297,13 @@ def checking_white(min_y,x_val,part_no):
 					return val
 	return False
 
-
+'''
+Function Name: checking_periodicity_large
+Input parameters: An image containing the contours of the skeletonized cropped out portion of the Log Mel Spectrogram image.
+Purpose: This function checks for the presence of the longer cycle (wail) ambulance sound. It checks for the presence of 3 periodic cycles. It checks the periodicity for sounds starting from different portions of the audio file. This is done by dividing the 
+audio file into 4 parts vertically. 
+Output parameters: Returns True if 3 periodic cycles are found continuously in any portion of the audio file and False otherwise.
+'''
 def checking_periodicity_large(img_l):
 	global img
 	global l_or_s
@@ -332,6 +369,13 @@ def checking_periodicity_large(img_l):
 	else:
 		return False
 
+'''
+Function Name: checking_periodicity_small
+Input parameters: An image containing the contours of the skeletonized cropped out portion of the Log Mel Spectrogram image.
+Purpose: This function checks for the presence of the shorter cycle (yelp) ambulance sound. It checks for the presence of periodic cycles from when detected till the end of the audio file. It checks the periodicity for sounds starting from different portions of the
+audio file. This is done by dividing the audio file into 12 parts vertically. 
+Output parameters: Returns True if periodic cycles are found continuously from when detected till the end of the audio file and False otherwise.
+'''
 def checking_periodicity_small(img_s):
 	global img
 	img=img_s
@@ -429,6 +473,12 @@ led_r = board.digital[10]
 led_y = board.digital[9]
 led_g = board.digital[6]
 
+'''
+Function Name: ambulance_sound_detect
+Input parameters: Keyboard input given by user
+Purpose: Based on the input value given, the corresponding audio file is sent for processing. The True or False value returned will determine whether the green LED should be turned on or not.
+Output parameters: None
+'''
 def ambulance_sound_detect(a):
 	if a==1:
 		audio = "/home/laasya02/Ambulance_Sound_Project/Ambulance_Horn_Combined.wav"     #path = "<path>/Ambulance_Horn_Combined.wav"
