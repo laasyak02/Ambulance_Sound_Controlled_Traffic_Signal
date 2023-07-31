@@ -10,13 +10,13 @@ import cv2
 import keyboard
 from skimage.morphology import skeletonize
 
-'''
+"""
 Function Name: audio_to_skeletonize
 Input parameters: Audio file to be processed in .wav format
 Purpose: The audio file is processed to generate the Mel Spectrogram and the Log Mel Spectrogram. The Log Mel Spectrogram further undergoes Image Processing. It is first binarized, following which the portion where the ambulance sound may be present is cropped out.
 This cropped out portion then undergoes skeletonization. The skeletonized image then undergoes contour detection.The contours detected are drawn on to a new image. This image is further sent as an input to another function which checks the presence of periodicity.
 Output parameters: Returns True if the presence of Ambulance sound is confirmed and False otherwise.
-'''
+"""
 def audio_to_skeletonize(audio):
 	x, sr = librosa.load(audio)
 	mel_bins = 64 # Number of mel bands
