@@ -1,7 +1,8 @@
 # Ambulance-Sound-Controlled Traffic Signal
 
-This project was carried out as part of an internship at CSIR-National Aerospace Laboratories (NAL), Bengaluru from June - July 2023. It is a traffic-signal system that detects an **ambulance siren** from audio and holds the light green to let the ambulance through. Siren detection is done with traditional **audio + image processing**, and the signal is driven on an **Arduino** via `pyfirmata`.
+Built a traffic-signal system that detects an **ambulance siren** from audio and holds the light green to let the ambulance through. Siren detection is done with traditional **audio + image processing**, and the signal is driven on an **Arduino** via `pyfirmata`.
 
+This project was carried out as part of an internship at CSIR-National Aerospace Laboratories (NAL), Bengaluru from June - July 2023. 
 <p align="center">
   <img src="media/led_states.jpg" width="720" alt="Arduino traffic-signal prototype showing the red, yellow and green states">
   <br><i>The Arduino traffic-signal prototype - red, yellow and green states.</i>
