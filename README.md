@@ -24,10 +24,10 @@ Ambulance sirens sweep up and down in pitch in a regular, repeating pattern, mos
 Two siren types are handled separately: the slow **wail** (needs about 15 s of audio) and the fast **yelp** (about 5 s).
 
 <p align="center"><img src="media/pipeline_wail.png" width="800" alt="Wail siren detection pipeline"></p>
-<p align="center"><i>Wail siren detection. In the log-mel spectrogram, the siren appears as slow, repeating arcs. The spectrogram is thresholded into a binary image and cropped to the band containing the siren, skeletonized to thin the band to single-pixel curves, and its contours are extracted with small ones removed. What remains is the siren's rise-and-fall pattern, whose peaks and troughs are counted to confirm the siren.</i></p>
+<p align="center"><i>Wail siren: the log-mel spectrogram is thresholded and cropped to the siren band, skeletonized, and reduced to contours. The peaks and troughs left are counted to detect the siren.</i></p>
 
 <p align="center"><img src="media/pipeline_yelp.png" width="800" alt="Yelp siren detection pipeline"></p>
-<p align="center"><i>Yelp siren detection. The yelp sweeps much faster, so it appears as a tight sawtooth in the log-mel spectrogram. The same steps - thresholding and cropping, skeletonization and contour extraction - reduce it to a pattern of closely spaced peaks and troughs, which are counted to confirm the siren.</i></p>
+<p align="center"><i>Yelp siren: the same steps applied to its faster, sawtooth-shaped sweep.</i></p>
 
 ### 2. Traffic signal control (Arduino)
 
@@ -50,27 +50,27 @@ The system was tested on recordings of both siren types, on sirens mixed with mu
 <table align="center">
   <tr>
     <td align="center"><img src="media/siren_spectrogram.png" width="360" alt="Log-mel spectrogram of a wail siren"></td>
-    <td align="center" valign="middle"><img src="media/wail_detected_term.png" width="430" alt="Detector output on the siren: peak and trough coordinates, True"></td>
+    <td align="center" valign="middle"><img src="media/wail_detected_term.png" width="400" alt="Detector output on the siren: peak and trough coordinates, True"></td>
   </tr>
   <tr>
-    <td align="center" colspan="2"><i>Ambulance siren (wail): the detector finds the repeating peaks and troughs of the siren's pitch sweep in the contour image (their coordinates and pixel counts are printed) and confirms a siren - <code>True</code>.</i></td>
+    <td align="center" colspan="2"><i>Siren input: peaks and troughs found, siren detected (<code>True</code>).</i></td>
   </tr>
   <tr>
     <td align="center"><img src="media/horn_spectrogram.png" width="360" alt="Mel spectrogram of a horn-only recording"></td>
-    <td align="center" valign="middle"><img src="media/horn_rejected_term.png" width="430" alt="Detector output on the horn recording: False"></td>
+    <td align="center" valign="middle"><img src="media/horn_rejected_term.png" width="400" alt="Detector output on the horn recording: False"></td>
   </tr>
   <tr>
-    <td align="center" colspan="2"><i>Horn sound only: the spectrogram has no energy above 600 Hz, where siren sounds lie, so no siren is detected - <code>False</code>.</i></td>
+    <td align="center" colspan="2"><i>Horn-only input: no sound above 600 Hz, no siren detected (<code>False</code>).</i></td>
   </tr>
 </table>
 
 **Full system.** The signal cycles normally until a siren is heard, then switches to green and holds it. When only horn sound remains, the cycle resumes from where it was interrupted. The logs below show the signal state at each update.
 
-<p align="center"><img src="media/full_siren_to_green.png" width="560" alt="Signal is red, a wail siren is detected, signal switches to green"></p>
-<p align="center"><i>The signal is red when a wail siren is detected. The normal cycle is interrupted and the signal switches to green, staying green while the siren is heard.</i></p>
+<p align="center"><img src="media/full_siren_to_green.png" width="600" alt="Signal is red, a wail siren is detected, signal switches to green"></p>
+<p align="center"><i>Siren detected while the signal is red: it switches to green.</i></p>
 
-<p align="center"><img src="media/full_horn_resume.png" width="560" alt="Siren gone, only horn sound, cycle resumes at red"></p>
-<p align="center"><i>Once only horn sound is heard, no siren is detected and the signal returns to its normal cycle from where it was interrupted - here, back to red.</i></p>
+<p align="center"><img src="media/full_horn_resume.png" width="600" alt="Siren gone, only horn sound, cycle resumes at red"></p>
+<p align="center"><i>Siren gone, only horn sound: the normal cycle resumes from where it stopped.</i></p>
 
 ---
 
