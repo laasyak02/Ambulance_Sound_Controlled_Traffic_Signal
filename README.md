@@ -24,10 +24,10 @@ Ambulance sirens sweep up and down in pitch in a regular, repeating pattern, mos
 Two siren types are handled separately: the slow **wail** (needs about 15 s of audio) and the fast **yelp** (about 5 s).
 
 <p align="center"><img src="media/pipeline_wail.png" width="800" alt="Wail siren detection pipeline"></p>
-<p align="center"><i>Wail siren: log-mel spectrogram and the image-processing steps used to detect it.</i></p>
+<p align="center"><i>Wail siren detection. In the log-mel spectrogram, the siren appears as slow, repeating arcs. The spectrogram is thresholded into a binary image and cropped to the band containing the siren, skeletonized to thin the band to single-pixel curves, and its contours are extracted with small ones removed. What remains is the siren's rise-and-fall pattern, whose peaks and troughs are counted to confirm the siren.</i></p>
 
 <p align="center"><img src="media/pipeline_yelp.png" width="800" alt="Yelp siren detection pipeline"></p>
-<p align="center"><i>Yelp siren: the same steps on the faster, sawtooth-shaped siren.</i></p>
+<p align="center"><i>Yelp siren detection. The yelp sweeps much faster, so it appears as a tight sawtooth in the log-mel spectrogram. The same steps - thresholding and cropping, skeletonization and contour extraction - reduce it to a pattern of closely spaced peaks and troughs, which are counted to confirm the siren.</i></p>
 
 ### 2. Traffic signal control (Arduino)
 
@@ -53,26 +53,34 @@ The system was tested on recordings of both siren types, on sirens mixed with mu
     <td align="center" valign="middle"><img src="media/wail_detected_term.png" width="430" alt="Detector output on the siren: peak and trough coordinates, True"></td>
   </tr>
   <tr>
-    <td align="center" colspan="2"><i>Wail siren - detected (<code>True</code>).</i></td>
+    <td align="center" colspan="2"><i>Ambulance siren (wail): the detector finds the repeating peaks and troughs of the siren's pitch sweep in the contour image (their coordinates and pixel counts are printed) and confirms a siren - <code>True</code>.</i></td>
   </tr>
   <tr>
     <td align="center"><img src="media/horn_spectrogram.png" width="360" alt="Mel spectrogram of a horn-only recording"></td>
     <td align="center" valign="middle"><img src="media/horn_rejected_term.png" width="430" alt="Detector output on the horn recording: False"></td>
   </tr>
   <tr>
-    <td align="center" colspan="2"><i>Horn only - no siren (<code>False</code>).</i></td>
+    <td align="center" colspan="2"><i>Horn sound only: the spectrogram has no energy above 600 Hz, where siren sounds lie, so no siren is detected - <code>False</code>.</i></td>
   </tr>
 </table>
 
 **Full system.** The signal cycles normally until a siren is heard, then switches to green and holds it. When only horn sound remains, the cycle resumes from where it was interrupted. The logs below show the signal state at each update.
 
 <p align="center"><img src="media/full_siren_to_green.png" width="560" alt="Signal is red, a wail siren is detected, signal switches to green"></p>
-<p align="center"><i>Siren detected while red - the signal switches to green.</i></p>
+<p align="center"><i>The signal is red when a wail siren is detected. The normal cycle is interrupted and the signal switches to green, staying green while the siren is heard.</i></p>
 
 <p align="center"><img src="media/full_horn_resume.png" width="560" alt="Siren gone, only horn sound, cycle resumes at red"></p>
-<p align="center"><i>Siren gone - the cycle resumes where it left off.</i></p>
+<p align="center"><i>Once only horn sound is heard, no siren is detected and the signal returns to its normal cycle from where it was interrupted - here, back to red.</i></p>
 
-**Future work:** real-time detection from live microphones, more siren types and multiple signals, and running it standalone on a board such as a Raspberry Pi or Jetson Nano.
+---
+
+## Future work
+
+The current system works on pre-recorded audio clips and controls a single traffic signal. To make it deployable at a real intersection, the next steps are:
+
+- **Real-time detection** - recording audio live from microphones placed along the approach roads and processing it as it arrives, so the signal reacts while the ambulance is still approaching.
+- **More sirens and signals** - extending detection to other siren types, and coordinating all the signals at an intersection so that the ambulance's direction turns green while the others turn red.
+- **Standalone hardware** - running the detection and signal control together on a low-cost single-board computer such as a Raspberry Pi or Jetson Nano, so the system can work as an independent unit at the signal.
 
 ---
 
